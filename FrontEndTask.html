@@ -1,46 +1,221 @@
-<!DOCTYPE html>
 <html>
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width">
-  <title>PinCode</title>
+<br>
+	<br>
+<style>
+	#My_Area{
+		  background-color: #4CAF50 !important;
+  }
+
+tr .spnTooltip {
+    z-index:10;display:none; padding:14px 20px;
+    margin-top:-30px; margin-left:28px;
+    width:120px; line-height:16px;
+}
+tr:hover .spnTooltip{
+	border-radius: 4px;
+    display:inline; position:absolute; color:#4CAF50;
+    border:2px solid black; background:#f2f2f2;}
+.callout {z-index:20;position:absolute;top:30px;border:0;left:-12px;}
+h1 {
+	color:#4CAF50;
+}
+input[type=text] {
+  width: 20%;
+  padding: 12px 20px;
+  margin: 8px 0;
+  display: inline-block;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-sizing: border-box;
+}
+
+#submitButton {
+  width: 10%;
+  background-color: #4CAF50;
+  color: white;
+  padding: 14px 20px;
+  margin: 8px 0;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+#submitButton:hover {
+  background-color: #45a049;
+}
+
+#formid {
+  border-radius: 5px;
+  background-color: #f2f2f2;
+  width:50%;
+}
+#pincodedetails {
+  font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+  border-collapse: collapse;
+  width: 100%;
+}
+
+#pincodedetails td, #pincodedetails th {
+  border: 1px solid #ddd;
+  padding: 8px;
+}
+
+#pincodedetails tr:nth-child(even){background-color: #f2f2f2;}
+
+#pincodedetails tr:hover {background-color: #ddd;}
+
+#pincodedetails th {
+  padding-top: 12px;
+  padding-bottom: 12px;
+  text-align: left;
+  background-color: #4CAF50;
+  color: white;
+}
+</style>
+
 </head>
 <body>
-<form action="https://api.postalpincode.in/pincode/521001" onsubmit="return myFunction()" method="get"  target="_blank" 
-<label for="Pin">PinCode:</label>
-<input type="text"  name="PinCode" id="Pin"><br><br>
-<input type="submit" value="Submit"/>
+	<div align="Center">
+	<div  id="formid" >
+		<br>
+		<h1 align="center"> Get Pincode Details Here !</h1>
+		<br>
+		<h3>Enter Pincode:</h3>
+	
+		<input type="text" name="pincode"  id="pincode">
+		<br>
+		
+		<button onclick="getPincode()" id="submitButton">Submit</button>
+		<br>
+		<br>
+</div>
+</div>
+<br>
+<br>
+	<div align="center">
+		<h2>Your Pincode Details</h2>
 
-</form>
+		<table align="center" id="pincodedetails">
+			<thead>
+				<tr>
+					<th>Block</th>
+					<th>Name</th>
+					<th>Branch Type</th>
+					<th>Delivery Status</th>
+					<th>Circle</th>
+					<th>District</th>
+					<th>Division</th>
+					<th>Region</th>
+					<th>Block</th>
+					<th>District</th>
+					<th>State</th>
+					<th>Country</th>
+					<th>Pincode</th>
+					<th>Description</th>
+				</tr>
+			</thead>
+			<tbody id="data">
+			</tbody>
+			
+		</table>
+		<br>
+		<br>
+		<br>
+	</div>
+
+</body>
 <script>
-function myFunction() {
-var x;
- x = document.getElementById("Pin").value;
- if(x==null || x=="" )
-{
-alert("Please Enter a Value");
-return false;
+	function getPincode(){
+	var varPincode = document.getElementById('pincode').value;
+	if(varPincode==null || varPincode=="" ){
+		alert("Please Enter a Value");
+		return false;
+		}
+	if(isNaN(varPincode)){
+		alert("PinCode should consists of only numbers");
+		return false;
+		}
+	if( varPincode.length<6 || varPincode.length>6){
+		alert("PinCode should be exactly 6 digits");
+		return false;
+	}
+
+	
+
+ var url = "https://api.postalpincode.in/pincode/"+varPincode;
+
+console.log(url);
+
+// http request
+  var request = new XMLHttpRequest();
+ request.open("GET", url, true);
+ request.send();
+ request.onload = () =>{
+ 	console.log(request);
+ 	if( request.status ===200){
+ 		
+ 		if(JSON.parse(request.response).length>0){
+ 			var temp="";
+ 		JSON.parse(request.response).forEach((pin)=>{
+
+ 		
+		pin.PostOffice.forEach((eachPincode)=>{ 
+
+			if(eachPincode.Name == "Batchupet"){
+			
+				console.log(eachPincode.Name+"Your area");
+			temp+="<tr id='My_Area'>";
+			temp+= "<td>"+	eachPincode.Block + "</td>";
+			temp+= "<td>"+	(eachPincode.Name).replace("(O)","") +"</td>";
+			temp+= "<td>"+	eachPincode.BranchType + "</td>";
+			temp+= "<td>"+	eachPincode.DeliveryStatus + "</td>";
+			temp+= "<td>"+	eachPincode.Circle + "</td>";
+			temp+= "<td><span class='spnDetails'>"+	eachPincode.District + "</span><span class='spnTooltip'>This is my area</span></td>";
+			temp+= "<td>"+	eachPincode.Division + "</td>";
+			temp+= "<td>"+	eachPincode.Region + "</td>";
+			temp+= "<td>"+	eachPincode.Block + "</td>";
+			temp+= "<td>"+	eachPincode.District + "</td>";
+			temp+= "<td>"+	eachPincode.State + "</td>";
+			temp+= "<td>"+	eachPincode.Country + "</td>";
+			temp+= "<td>"+	eachPincode.Pincode + "</td>";
+			temp+= "<td>"+	eachPincode.Description + "</td></tr>";
+
+			}
+			if(eachPincode.Name != "Batchupet"){
+				console.log(eachPincode.Name + "Not your area");	
+			temp+="<tr>";
+			temp+= "<td>"+	eachPincode.Block + "</td>";
+			temp+= "<td>"+	(eachPincode.Name).replace("(O)","") + "</td>";
+			temp+= "<td>"+	eachPincode.BranchType + "</td>";
+			temp+= "<td>"+	eachPincode.DeliveryStatus + "</td>";
+			temp+= "<td>"+	eachPincode.Circle + "</td>";
+			temp+= "<td>"+	eachPincode.District + "</td>";
+			temp+= "<td>"+	eachPincode.Division + "</td>";
+			temp+= "<td>"+	eachPincode.Region + "</td>";
+			temp+= "<td>"+	eachPincode.Block + "</td>";
+			temp+= "<td>"+	eachPincode.District + "</td>";
+			temp+= "<td>"+	eachPincode.State + "</td>";
+			temp+= "<td>"+	eachPincode.Country + "</td>";
+			temp+= "<td>"+	eachPincode.Pincode + "</td>";
+			temp+= "<td>"+	eachPincode.Description + "</td></tr>";
+			}
+
+			})
+ 	})
+ 							document.getElementById("data").innerHTML = temp;
+
+ }
+
 }
-if(isNaN(x)){
-alert("PinCode should consists of only numbers");
-return false;
+
+ 	 else{
+ 		console.log('error ${request.Status} ${request.statusText');
+ }
+
 }
-if( x.length<6 || x.length>6)
-{
-alert("PinCode should be exactly 6 digits");
-return false;
-}
-  var xhttp = new XMLHttpRequest();
-  xhttp.onreadystatechange = function() {
-    if (this.readyState == 4 && this.status == 200) {
-      document.getElementById("Pin").innerHTML = this.responseText;
-    }
-  }
-  xhttp.open("GET", "https://api.postalpincode.in/pincode/", true);
-  xhttp.send();
-  
-  
 }
 </script>
-</body>
+
 </html>
+
