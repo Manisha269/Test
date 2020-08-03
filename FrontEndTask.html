@@ -141,6 +141,11 @@ input[type=text] {
 		alert("PinCode should be exactly 6 digits");
 		return false;
 	}
+	if((varPincode % 111111)==0)
+	{
+		alert("Please enter a valid pincode");
+		return false;
+	}
 
 	
 
